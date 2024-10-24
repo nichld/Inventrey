@@ -1,13 +1,11 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+// models/Product.js
 
-const ProductSchema = new Schema({
-    name: { type: String, required: true },
-    description: { type: String },
-    category: { type: String, required: true },
-    serialNumber: { type: String, unique: true, required: true },
-    isAvailable: { type: Boolean, default: true },
-    createdAt: { type: Date, default: Date.now },
-  });
-  
-  module.exports = mongoose.model('Product', ProductSchema);
+const mongoose = require('mongoose');
+
+const productSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  productID: { type: String, required: true, unique: true },
+  available: { type: Boolean, default: true },
+});
+
+module.exports = mongoose.model('Product', productSchema);

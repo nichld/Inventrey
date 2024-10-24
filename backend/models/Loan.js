@@ -1,15 +1,12 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+// models/Loan.js
 
-const LoanSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    products: [{ 
-      product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-      serialNumber: { type: String, required: true },
-    }],
-    loanDate: { type: Date, default: Date.now },
-    returnDate: { type: Date },
-    status: { type: String, default: 'ongoing', enum: ['ongoing', 'returned'] },
-  });
-  
-  module.exports = mongoose.model('Loan', LoanSchema);
+const mongoose = require('mongoose');
+
+const loanSchema = new mongoose.Schema({
+  created: { type: Date, default: Date.now },
+  customers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Customer' }],
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  description: { type: String, required: true }
+});
+
+module.exports = mongoose.model('Loan', loanSchema);

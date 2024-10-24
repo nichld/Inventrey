@@ -1,67 +1,77 @@
+// controllers/productController.js
+
 const Product = require('../models/Product');
 
-// @desc    Get all products
-// @route   GET /api/products
-exports.getAllProducts = async (req, res) => {
+// Get all products
+exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find();
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc    Get a product by ID
-// @route   GET /api/products/:id
+// Get a product by ID
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ success: false, message: 'Product not found' });
     }
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc    Create a new product
-// @route   POST /api/products
+// Create a new product
 exports.createProduct = async (req, res) => {
-  const { name, description, category, serialNumber } = req.body;
   try {
-    const product = new Product({ name, description, category, serialNumber });
-    await product.save();
-    res.status(201).json(product);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    res.status(201).json({ success: true, data: newProduct });
+  } catch (error) {
+    // Handle duplicate productID error
+    if (error.code === 11000) {
+      res.status(400).json({ success: false, error: 'Product ID must be unique' });
+    } else {
+      res.status(400).json({ success: false, error: error.message });
+    }
   }
 };
 
-// @desc    Update a product
-// @route   PUT /api/products/:id
+// Update a product
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
     }
-    res.json(product);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(200).json({ success: true, data: updatedProduct });
+  } catch (error) {
+    // Handle duplicate productID error
+    if (error.code === 11000) {
+      res.status(400).json({ success: false, error: 'Product ID must be unique' });
+    } else {
+      res.status(400).json({ success: false, error: error.message });
+    }
   }
 };
 
-// @desc    Delete a product
-// @route   DELETE /api/products/:id
+// Delete a product
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
     }
-    res.json({ message: 'Product deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ success: true, data: deletedProduct });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

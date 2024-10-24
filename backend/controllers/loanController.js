@@ -1,97 +1,144 @@
+// controllers/loanController.js
+
 const Loan = require('../models/Loan');
+const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 
-// @desc    Get all loans
-// @route   GET /api/loans
-exports.getAllLoans = async (req, res) => {
+// Get all loans
+exports.getLoans = async (req, res) => {
   try {
-    const loans = await Loan.find().populate('user products.product');
-    res.json(loans);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const loans = await Loan.find()
+      .populate('customers')
+      .populate('products');
+    res.status(200).json({ success: true, data: loans });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc    Get a loan by ID
-// @route   GET /api/loans/:id
+// Get a loan by ID
 exports.getLoanById = async (req, res) => {
   try {
-    const loan = await Loan.findById(req.params.id).populate('user products.product');
+    const loan = await Loan.findById(req.params.id)
+      .populate('customers')
+      .populate('products');
     if (!loan) {
-      return res.status(404).json({ message: 'Loan not found' });
+      return res.status(404).json({ success: false, message: 'Loan not found' });
     }
-    res.json(loan);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ success: true, data: loan });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc    Create a new loan
-// @route   POST /api/loans
-exports.createLoan = async (req, res) => {
-  const { user, products } = req.body;
+// Create a new loan
+// controllers/loanController.js
 
+exports.createLoan = async (req, res) => {
   try {
-    // Create loan
-    const loan = new Loan({
-      user,
+    const { customers, products, description } = req.body;
+
+    // Validate if customers and products exist
+    const foundCustomers = await Customer.find({ _id: { $in: customers } });
+    const foundProducts = await Product.find({ _id: { $in: products } });
+
+    if (foundCustomers.length !== customers.length) {
+      return res.status(400).json({ success: false, error: "Some customers do not exist." });
+    }
+
+    if (foundProducts.length !== products.length) {
+      return res.status(400).json({ success: false, error: "Some products do not exist." });
+    }
+
+    // Create a new loan
+    const newLoan = new Loan({
+      customers,
       products,
+      description,
     });
 
-    // Mark products as unavailable
-    for (let i = 0; i < products.length; i++) {
-      const product = await Product.findById(products[i].product);
-      if (!product || !product.isAvailable) {
-        return res.status(400).json({ message: 'Product not available for loan' });
-      }
-      product.isAvailable = false;
-      await product.save();
-    }
+    await newLoan.save();
 
-    await loan.save();
-    res.status(201).json(loan);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    // Update product availability
+    await Product.updateMany(
+      { _id: { $in: products } },
+      { $set: { available: false } }
+    );
+
+    // Add the loan ID to each customer's loans array
+    await Customer.updateMany(
+      { _id: { $in: customers } },
+      { $push: { loans: newLoan._id } }
+    );
+
+    res.status(201).json({ success: true, data: newLoan });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc    Update loan status
-// @route   PUT /api/loans/:id/status
-exports.updateLoanStatus = async (req, res) => {
-  const { status } = req.body;
-
-  try {
-    const loan = await Loan.findByIdAndUpdate(req.params.id, { status }, { new: true });
-    if (!loan) {
-      return res.status(404).json({ message: 'Loan not found' });
-    }
-    res.json(loan);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
-// @desc    Return a loan (mark items as returned)
-// @route   PUT /api/loans/:id/return
-exports.returnLoan = async (req, res) => {
+// Update a loan
+exports.updateLoan = async (req, res) => {
   try {
     const loan = await Loan.findById(req.params.id);
     if (!loan) {
-      return res.status(404).json({ message: 'Loan not found' });
+      return res.status(404).json({ success: false, message: 'Loan not found' });
     }
 
-    // Mark products as available again
-    for (let i = 0; i < loan.products.length; i++) {
-      const product = await Product.findById(loan.products[i].product);
-      product.isAvailable = true;
-      await product.save();
+    // Update product availability if products are changed
+    if (req.body.products) {
+      // Set availability of old products to true
+      await Product.updateMany(
+        { _id: { $in: loan.products } },
+        { $set: { available: true } }
+      );
+
+      // Set availability of new products to false
+      await Product.updateMany(
+        { _id: { $in: req.body.products } },
+        { $set: { available: false } }
+      );
     }
 
-    loan.returnDate = new Date();
-    loan.status = 'returned';
-    await loan.save();
-    res.json(loan);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const updatedLoan = await Loan.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    )
+      .populate('customers')
+      .populate('products');
+
+    res.status(200).json({ success: true, data: updatedLoan });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
   }
 };
+
+// Delete a loan
+exports.deleteLoan = async (req, res) => {
+    try {
+      const loan = await Loan.findById(req.params.id);
+      if (!loan) {
+        return res.status(404).json({ success: false, message: 'Loan not found' });
+      }
+  
+      // Set availability of products back to true
+      await Product.updateMany(
+        { _id: { $in: loan.products } },
+        { $set: { available: true } }
+      );
+  
+      // Remove loan ID from customers' loans array
+      await Customer.updateMany(
+        { _id: { $in: loan.customers } },
+        { $pull: { loans: loan._id } }
+      );
+  
+      // Delete the loan
+      await loan.deleteOne(); // Updated line
+  
+      res.status(200).json({ success: true, message: 'Loan deleted' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  };

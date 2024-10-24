@@ -1,20 +1,25 @@
+// routes/customerRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const {
-  getCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-} = require('../controllers/customerController');
+const customerController = require('../controllers/customerController');
 
-// Route to get all customers and create a new customer
-router.route('/')
-  .get(getCustomers) // GET /api/customers
-  .post(createCustomer); // POST /api/customers
+// Get all customers
+router.get('/', customerController.getCustomers);
 
-// Route to update and delete a customer by ID
-router.route('/:id')
-  .put(updateCustomer) // PUT /api/customers/:id
-  .delete(deleteCustomer); // DELETE /api/customers/:id
+// Get a customer by ID
+router.get('/:id', customerController.getCustomerById);
+
+// Get loans for a specific customer
+router.get('/:id/loans', customerController.getCustomerLoans);
+
+// Create a new customer
+router.post('/', customerController.createCustomer);
+
+// Update a customer
+router.put('/:id', customerController.updateCustomer);
+
+// Delete a customer
+router.delete('/:id', customerController.deleteCustomer);
 
 module.exports = router;

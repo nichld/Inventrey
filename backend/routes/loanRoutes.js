@@ -1,31 +1,22 @@
+// routes/loanRoutes.js
+
 const express = require('express');
-const {
-  getAllLoans,
-  getLoanById,
-  createLoan,
-  updateLoanStatus,
-  returnLoan,
-} = require('../controllers/loanController');
 const router = express.Router();
+const loanController = require('../controllers/loanController');
 
-// @route   GET /api/loans
-// @desc    Get all loans
-router.get('/', getAllLoans);
+// Get all loans
+router.get('/', loanController.getLoans);
 
-// @route   GET /api/loans/:id
-// @desc    Get a single loan by ID
-router.get('/:id', getLoanById);
+// Get a loan by ID
+router.get('/:id', loanController.getLoanById);
 
-// @route   POST /api/loans
-// @desc    Create a new loan
-router.post('/', createLoan);
+// Create a new loan
+router.post('/', loanController.createLoan);
 
-// @route   PUT /api/loans/:id/status
-// @desc    Update the loan status (e.g., returned)
-router.put('/:id/status', updateLoanStatus);
+// Update a loan
+router.put('/:id', loanController.updateLoan);
 
-// @route   PUT /api/loans/:id/return
-// @desc    Mark the loan as returned (return the items)
-router.put('/:id/return', returnLoan);
+// Delete a loan
+router.delete('/:id', loanController.deleteLoan);
 
 module.exports = router;

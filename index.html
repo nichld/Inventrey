@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory Management Test Interface</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Inventory Management Test Interface</h1>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-button active" data-tab="customers">Customers</button>
+    <button class="tab-button" data-tab="products">Products</button>
+    <button class="tab-button" data-tab="loans">Loans</button>
+  </div>
+
+  <!-- Content Areas -->
+  <div class="tab-content" id="customers">
+    <h2>Customers</h2>
+    <div class="form-section">
+      <h3>Add New Customer</h3>
+      <input type="text" id="customer-name" placeholder="Full Name">
+      <button id="add-customer">Add Customer</button>
+    </div>
+    <h3>All Customers</h3>
+    <table id="customers-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>Loans</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="tab-content" id="products" style="display:none;">
+    <h2>Products</h2>
+    <div class="form-section">
+      <h3>Add New Product</h3>
+      <input type="text" id="product-name" placeholder="Product Name">
+      <input type="text" id="product-id" placeholder="Product ID (e.g., R1)">
+      <button id="add-product">Add Product</button>
+    </div>
+    <h3>All Products</h3>
+    <table id="products-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Product ID</th>
+          <th>Available</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="tab-content" id="loans" style="display:none;">
+    <h2>Loans</h2>
+    <div class="form-section">
+      <h3>Create New Loan</h3>
+      <label for="loan-customers">Select Customer(s):</label>
+      <select id="loan-customers" multiple></select>
+      <label for="loan-products">Select Product(s):</label>
+      <select id="loan-products" multiple></select>
+      <input type="text" id="loan-description" placeholder="Description">
+      <button id="create-loan">Create Loan</button>
+    </div>
+    <h3>All Loans</h3>
+    <table id="loans-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Created</th>
+          <th>Customers</th>
+          <th>Products</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

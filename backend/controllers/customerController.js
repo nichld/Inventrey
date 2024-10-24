@@ -1,83 +1,100 @@
+// controllers/customerController.js
+
 const Customer = require('../models/Customer');
+const Loan = require('../models/Loan');
 
-// @desc Get all customers
-// @route GET /api/customers
-// @access Public
-const getCustomers = async (req, res) => {
+// Get all customers
+exports.getCustomers = async (req, res) => {
   try {
-    const customers = await Customer.find();
-    res.json(customers);
+    const customers = await Customer.find().populate('loans');
+    res.status(200).json({ success: true, data: customers });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc Create a new customer
-// @route POST /api/customers
-// @access Public
-const createCustomer = async (req, res) => {
-  const { fullName } = req.body;
-
-  if (!fullName) {
-    return res.status(400).json({ message: 'Full name is required' });
-  }
-
+// Get a customer by ID
+exports.getCustomerById = async (req, res) => {
   try {
-    const customerExists = await Customer.findOne({ fullName });
-
-    if (customerExists) {
-      return res.status(400).json({ message: 'Customer with this name already exists' });
-    }
-
-    const newCustomer = await Customer.create({ fullName });
-    res.status(201).json(newCustomer);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// @desc Update customer details
-// @route PUT /api/customers/:id
-// @access Public
-const updateCustomer = async (req, res) => {
-  const { fullName } = req.body;
-
-  try {
-    const customer = await Customer.findById(req.params.id);
-
+    const customer = await Customer.findById(req.params.id).populate('loans');
     if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
+      return res.status(404).json({ success: false, message: 'Customer not found' });
     }
-
-    customer.fullName = fullName || customer.fullName;
-    const updatedCustomer = await customer.save();
-    res.json(updatedCustomer);
+    res.status(200).json({ success: true, data: customer });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-// @desc Delete customer
-// @route DELETE /api/customers/:id
-// @access Public
-const deleteCustomer = async (req, res) => {
+// Get loans for a specific customer
+// controllers/customerController.js
+
+exports.getCustomerLoans = async (req, res) => {
+    try {
+      const customer = await Customer.findById(req.params.id).populate({
+        path: 'loans',
+        populate: {
+          path: 'products', // To populate products within each loan
+        },
+      });
+  
+      if (!customer) {
+        return res.status(404).json({ success: false, message: 'Customer not found' });
+      }
+  
+      res.status(200).json({ success: true, data: customer.loans });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  };
+
+// Create a new customer
+exports.createCustomer = async (req, res) => {
   try {
-    const customer = await Customer.findById(req.params.id);
-
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
-
-    await customer.remove();
-    res.json({ message: 'Customer removed' });
+    const newCustomer = new Customer(req.body);
+    await newCustomer.save();
+    res.status(201).json({ success: true, data: newCustomer });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // Handle duplicate fullName error
+    if (error.code === 11000) {
+      res.status(400).json({ success: false, error: 'Full name must be unique' });
+    } else {
+      res.status(400).json({ success: false, error: error.message });
+    }
   }
 };
 
-module.exports = {
-  getCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
+// Update a customer
+exports.updateCustomer = async (req, res) => {
+  try {
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedCustomer) {
+      return res.status(404).json({ success: false, message: 'Customer not found' });
+    }
+    res.status(200).json({ success: true, data: updatedCustomer });
+  } catch (error) {
+    // Handle duplicate fullName error
+    if (error.code === 11000) {
+      res.status(400).json({ success: false, error: 'Full name must be unique' });
+    } else {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
+};
+
+// Delete a customer
+exports.deleteCustomer = async (req, res) => {
+  try {
+    const deletedCustomer = await Customer.findByIdAndDelete(req.params.id);
+    if (!deletedCustomer) {
+      return res.status(404).json({ success: false, message: 'Customer not found' });
+    }
+    res.status(200).json({ success: true, data: deletedCustomer });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
