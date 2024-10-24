@@ -15,6 +15,7 @@ import { Home, Box, CreditCard, Users } from 'lucide-react';
 import Link from 'next/link';
 import { UserProfile } from '@/components/user-profile';
 import { NavMain } from "@/components/nav-main"
+import { TeamSwitcher } from "@/components/team-switcher"
 
 const navItems = [
   {
@@ -43,11 +44,8 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       {/* Header with logo and blue background */}
-      <SidebarHeader className="bg-blue-600">
-        <div className="flex items-center justify-center h-16">
-          {/* Replace '/logo.png' with the path to your actual logo */}
-          <img src="/logo.png" alt="Logo" className="h-8" />
-        </div>
+      <SidebarHeader>
+        <TeamSwitcher />
       </SidebarHeader>
 
       {/* Sidebar content with navigation links */}

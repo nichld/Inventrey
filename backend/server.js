@@ -2,8 +2,6 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
-// Use the error handler middleware after all routes
-
 // Load environment variables
 dotenv.config();
 
@@ -21,12 +19,14 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const loanRoutes = require('./routes/loanRoutes');
 const accountRoutes = require('./routes/accountRoutes');
+const customerRoutes = require('./routes/customerRoutes');
 
 // Use routes
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/loans', loanRoutes);
 app.use('/api/accounts', accountRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Set up server
 const PORT = process.env.PORT || 8000;
