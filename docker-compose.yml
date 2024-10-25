@@ -21,7 +21,7 @@ services:
     ports:
       - "3000:3000"  # Expose frontend on port 3000
     environment:
-      - NEXT_PUBLIC_API_URL=http://10.12.7.7:5000  # Use actual VM IP in production
+      - NEXT_PUBLIC_API_URL=http://10.12.7.7:5000
     depends_on:
       - backend
     networks:
