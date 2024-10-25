@@ -7,12 +7,8 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Home, Box, CreditCard, Users } from 'lucide-react';
-import Link from 'next/link';
 import { UserProfile } from '@/components/user-profile';
 import { NavMain } from "@/components/nav-main"
 import { TeamSwitcher } from "@/components/team-switcher"

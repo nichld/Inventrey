@@ -3,7 +3,6 @@
 import { type LucideIcon } from "lucide-react"
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
