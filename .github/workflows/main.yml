@@ -1,38 +1,32 @@
-name: Deploy to Ubuntu VM using Docker
+name: Build and Deploy with Docker
 
 on:
   push:
     branches:
-      - main  # Adjust if necessary
+      - main  # Trigger deployment when pushing to the main branch
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Uses your local runner
+    runs-on: self-hosted  # Assuming you're using a self-hosted runner on your server
     steps:
+      # Checkout the latest code from the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up Docker Buildx (for building multi-stage images)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      # Log in to Docker Hub if needed (Optional if pushing images to Docker Hub)
+      # Uncomment the lines below if you're pushing to Docker Hub
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build and push backend image
+      # Build and deploy containers using Docker Compose
+      - name: Build and deploy containers
         run: |
-          docker build -t your_dockerhub_username/backend:latest ./backend
-          docker push your_dockerhub_username/backend:latest
-
-      - name: Build and push frontend image
-        run: |
-          docker build -t your_dockerhub_username/frontend:latest ./frontend
-          docker push your_dockerhub_username/frontend:latest
-
-      - name: Deploy with Docker Compose
-        run: |
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d
+          docker-compose down  # Stop and remove existing containers
+          docker-compose up -d --build  # Build and start containers in detached mode
