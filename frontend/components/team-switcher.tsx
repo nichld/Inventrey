@@ -25,7 +25,7 @@
                   <span className="truncate font-semibold">
                     Inventrey
                   </span>
-                  <span className="truncate text-xs">BETA</span>
+                  <span className="truncate text-xs">ALPHA</span>
                 </div>
               </SidebarMenuButton>  </SidebarMenuItem>
       </SidebarMenu>
