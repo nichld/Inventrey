@@ -1,5 +1,7 @@
 "use client"
 
+const API_URL = "http://10.12.7.7:5000";
+
 import * as React from "react"
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table"
 import { MoreHorizontal, Plus, ChevronRight, ChevronLeft } from "lucide-react"
@@ -36,7 +38,7 @@ export function DataTable() {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/customers`)
+      const response = await axios.get(`${API_URL}/api/customers`)
       setData(response.data.data)
     } catch (error) {
       console.error("Failed to fetch customers", error)
@@ -51,7 +53,7 @@ export function DataTable() {
   const handleAddCustomer = async () => {
     if (newCustomerName.trim()) {
       try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/customers`, { fullName: newCustomerName })
+        const response = await axios.post(`${API_URL}/api/customers`, { fullName: newCustomerName })
         setData((prev) => [...prev, response.data.data])
         setNewCustomerName("")
         setDialogOpen(false)
@@ -64,7 +66,7 @@ export function DataTable() {
   const handleUpdateCustomer = async () => {
     if (editingCustomer) {
       try {
-        const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/customers/${editingCustomer._id}`, {
+        const response = await axios.put(`${API_URL}/api/customers/${editingCustomer._id}`, {
           fullName: editingCustomer.fullName,
         })
         setData((prev) =>
@@ -85,7 +87,7 @@ export function DataTable() {
 
   const handleDeleteCustomer = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/customers/${id}`)
+      await axios.delete(`${API_URL}/api/customers/${id}`)
       setData((prev) => prev.filter((customer) => customer._id !== id))
     } catch (error) {
       console.error("Failed to delete customer", error)

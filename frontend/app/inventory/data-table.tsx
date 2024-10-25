@@ -1,5 +1,7 @@
 "use client"
 
+const API_URL = "http://10.12.7.7:5000";
+
 import * as React from "react"
 import {
   ColumnDef,
@@ -74,7 +76,7 @@ export function DataTable() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
+      const response = await axios.get(`${API_URL}/api/products`)
       setData(response.data.data)
     } catch (error) {
       console.error("Failed to fetch products", error)
@@ -89,7 +91,7 @@ export function DataTable() {
   const handleAddProduct = async () => {
     if (newProduct.name && newProduct.productID) {
       try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
+        const response = await axios.post(`${API_URL}/api/products`, {
           ...newProduct,
           available: true, // Default to available
         })
@@ -105,7 +107,7 @@ export function DataTable() {
   const handleUpdateProduct = async () => {
     if (editingProduct) {
       try {
-        const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${editingProduct._id}`,
+        const response = await axios.put(`${API_URL}/api/products/${editingProduct._id}`,
           editingProduct
         )
         setData((prev) =>
@@ -128,7 +130,7 @@ export function DataTable() {
 
   const handleDeleteProduct = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`)
+      await axios.delete(`${API_URL}/api/products/${id}`)
       setData((prev) => prev.filter((product) => product._id !== id))
     } catch (error) {
       console.error("Failed to delete product", error)
