@@ -1,5 +1,3 @@
-# docker-compose.yml
-
 version: '3.8'
 
 services:
@@ -10,7 +8,7 @@ services:
     container_name: backend
     restart: unless-stopped
     ports:
-      - "5000:5000"  # Expose backend on port 3001
+      - "5000:5000"  # Expose backend on port 5000
     networks:
       - app-network
 
@@ -23,9 +21,9 @@ services:
     ports:
       - "3000:3000"  # Expose frontend on port 3000
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:5000  # Backend URL within the same Docker network
+      - NEXT_PUBLIC_API_URL=http://10.12.7.7:5000  # Use actual VM IP in production
     depends_on:
-      - backend  # Ensure backend starts before frontend
+      - backend
     networks:
       - app-network
 
