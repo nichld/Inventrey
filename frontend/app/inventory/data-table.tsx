@@ -74,7 +74,7 @@ export function DataTable() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/products")
+      const response = await axios.get("http://10.12.7.7:8000/api/products")
       setData(response.data.data)
     } catch (error) {
       console.error("Failed to fetch products", error)
@@ -89,7 +89,7 @@ export function DataTable() {
   const handleAddProduct = async () => {
     if (newProduct.name && newProduct.productID) {
       try {
-        const response = await axios.post("http://localhost:8000/api/products", {
+        const response = await axios.post("http://10.12.7.7:8000/api/products", {
           ...newProduct,
           available: true, // Default to available
         })
@@ -106,7 +106,7 @@ export function DataTable() {
     if (editingProduct) {
       try {
         const response = await axios.put(
-          `http://localhost:8000/api/products/${editingProduct._id}`,
+          `http://10.12.7.7:8000/api/products/${editingProduct._id}`,
           editingProduct
         )
         setData((prev) =>
@@ -129,7 +129,7 @@ export function DataTable() {
 
   const handleDeleteProduct = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`)
+      await axios.delete(`http://10.12.7.7:8000/api/products/${id}`)
       setData((prev) => prev.filter((product) => product._id !== id))
     } catch (error) {
       console.error("Failed to delete product", error)

@@ -36,7 +36,7 @@ export function DataTable() {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/customers")
+      const response = await axios.get("http://10.12.7.7:8000/api/customers")
       setData(response.data.data)
     } catch (error) {
       console.error("Failed to fetch customers", error)
@@ -51,7 +51,7 @@ export function DataTable() {
   const handleAddCustomer = async () => {
     if (newCustomerName.trim()) {
       try {
-        const response = await axios.post("http://localhost:8000/api/customers", { fullName: newCustomerName })
+        const response = await axios.post("http://10.12.7.7:8000/api/customers", { fullName: newCustomerName })
         setData((prev) => [...prev, response.data.data])
         setNewCustomerName("")
         setDialogOpen(false)
@@ -64,7 +64,7 @@ export function DataTable() {
   const handleUpdateCustomer = async () => {
     if (editingCustomer) {
       try {
-        const response = await axios.put(`http://localhost:8000/api/customers/${editingCustomer._id}`, {
+        const response = await axios.put(`http://10.12.7.7:8000/api/customers/${editingCustomer._id}`, {
           fullName: editingCustomer.fullName,
         })
         setData((prev) =>
@@ -85,7 +85,7 @@ export function DataTable() {
 
   const handleDeleteCustomer = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:8000/api/customers/${id}`)
+      await axios.delete(`http://10.12.7.7:8000/api/customers/${id}`)
       setData((prev) => prev.filter((customer) => customer._id !== id))
     } catch (error) {
       console.error("Failed to delete customer", error)
