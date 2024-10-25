@@ -10,7 +10,7 @@ services:
     container_name: backend
     restart: unless-stopped
     ports:
-      - "3001:3001"  # Expose backend on port 3001
+      - "8000:8000"  # Expose backend on port 3001
     networks:
       - app-network
 
@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:3000"  # Expose frontend on port 3000
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:3001  # Backend URL within the same Docker network
+      - NEXT_PUBLIC_API_URL=http://backend:8000  # Backend URL within the same Docker network
     depends_on:
       - backend  # Ensure backend starts before frontend
     networks:

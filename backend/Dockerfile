@@ -16,7 +16,7 @@ RUN npm install --production
 COPY . .
 
 # Expose the backend port
-EXPOSE 3001
+EXPOSE 5000
 
 # Start the backend server
 CMD [ "node", "server.js" ]

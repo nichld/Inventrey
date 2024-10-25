@@ -115,7 +115,7 @@ export default function LoanView() {
 
   const fetchLoans = async () => {
     try {
-      const response = await axios.get("http://10.12.7.7:8000/api/loans");
+      const response = await axios.get("http://backend:8000/api/loans");
       setData(response.data.data);
       setLoading(false);
     } catch {
@@ -126,7 +126,7 @@ export default function LoanView() {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://10.12.7.7:8000/api/customers");
+      const response = await axios.get("http://backend:8000/api/customers");
       setCustomers(response.data.data);
     } catch (error) {
       console.error("Failed to fetch customers", error);
@@ -135,7 +135,7 @@ export default function LoanView() {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://10.12.7.7:8000/api/products");
+      const response = await axios.get("http://backend:8000/api/products");
       setProducts(response.data.data.filter((p: Product) => p.available));
     } catch (error) {
       console.error("Failed to fetch products", error);
@@ -150,7 +150,7 @@ export default function LoanView() {
   const handleUpdateLoan = async () => {
     if (editingLoan) {
       try {
-        await axios.put(`http://10.12.7.7:8000/api/loans/${editingLoan._id}`, {
+        await axios.put(`http://backend:8000/api/loans/${editingLoan._id}`, {
           description: editingLoan.description,
         });
         setData((prev) =>
@@ -169,7 +169,7 @@ export default function LoanView() {
   const handleDeleteLoan = async (id: string) => {
     console.log("handleDeleteLoan called with id:", id);
     try {
-      await axios.delete(`http://10.12.7.7:8000/api/loans/${id}`);
+      await axios.delete(`http://backend:8000/api/loans/${id}`);
       setData((prev) => prev.filter((loan) => loan._id !== id));
     } catch (error) {
       console.error("Failed to delete loan", error);
@@ -190,7 +190,7 @@ export default function LoanView() {
       selectedProductIds.length > 0
     ) {
       try {
-        const response = await axios.post("http://10.12.7.7:8000/api/loans", {
+        const response = await axios.post("http://backend:8000/api/loans", {
           description: newLoanDescription,
           customers: selectedCustomerIds,
           products: selectedProductIds,
